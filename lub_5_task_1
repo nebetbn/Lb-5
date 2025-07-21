@@ -1,0 +1,54 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+// Попередньо обчислюємо довжини рядків Фібоначчі
+std::vector<long long> lengths(46); // Максимальне N = 45
+
+void precompute_lengths() {
+    lengths[0] = 1; // Довжина F0 ("a")
+    lengths[1] = 1; // Довжина F1 ("b")
+    for (int i = 2; i <= 45; ++i) {
+        lengths[i] = lengths[i-2] + lengths[i-1];
+    }
+}
+
+// Функція для пошуку k-го символу n-го рядка Фібоначчі
+char find_char(int n, long long k) {
+    // Базові випадки
+    if (n == 0) {
+        return 'a';
+    }
+    if (n == 1) {
+        return 'b';
+    }
+
+    // F_n = F_{n-2}F_{n-1}
+    // Якщо k знаходиться в першій частині (F_{n-2})
+    if (k <= lengths[n-2]) {
+        return find_char(n - 2, k);
+    } else {
+        // Якщо k знаходиться в другій частині (F_{n-1})
+        // Коригуємо k, щоб воно було відносно початку F_{n-1}
+        return find_char(n - 1, k - lengths[n-2]);
+    }
+}
+
+int main() {
+    // Оптимізація введення/виведення C++ для швидкості
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    precompute_lengths(); // Викликаємо функцію для попереднього обчислення довжин
+
+    int T;
+    std::cin >> T; // Зчитуємо кількість запитів
+    while (T--) {
+        int n;
+        long long k; // k може бути великим, тому використовуємо long long
+        std::cin >> n >> k; // Зчитуємо n та k для поточного запиту
+        std::cout << find_char(n, k) << "\n"; // Виводимо результат
+    }
+
+    return 0;
+}
